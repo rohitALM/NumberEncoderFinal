@@ -2,13 +2,16 @@ package de.number.NumberEncoder;
 
 
 /**
- * Entrypoint ClassS
+ * Entry Point Class
  * 
+ * @author Rohit
+ *
  */
 public class EntryPoint {
 	public static void main(String[] args) {
 
-		Encoder encode = new Encoder();
+		Encoder encoder = new Encoder();
+		encoder.encode();
 
 	}
 }

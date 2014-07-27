@@ -1,33 +1,26 @@
 package de.number.Dictionary;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Map.Entry;
 
 public class TrieNode {
 
 	private TrieNode parent;
-	// private TrieNode[] children;
 	private HashMap<Character, TrieNode> children;
 
-	private boolean isLeaf; // Quick way to check if any children exist
 	private boolean isWord; // Does this node represent the last character of a
 							// word
 	private char character; // The character this node represents
-	
-	private boolean isFollowedByUmlaut;
+
+	private boolean IsFollowedByUmlaut;// Checks if the preceding character is
+										// an umlaut
 
 	/**
 	 * Constructor for top level root node.
 	 */
 	public TrieNode() {
 		children = new HashMap<Character, TrieNode>();
-		isLeaf = true;
 		isWord = false;
-		isFollowedByUmlaut = false;
+		IsFollowedByUmlaut = false;
 	}
 
 	/**
@@ -47,33 +40,45 @@ public class TrieNode {
 	 *            the word to add
 	 */
 	protected void add(String word) {
-		boolean umlautAddCondition = false;
-		isLeaf = false;
-		if (word.length() < 1)
-			return;
 
 		char firstChar = word.charAt(0);
 
 		TrieNode childrenCharPos = children.get(firstChar);
 
-		if (childrenCharPos == null) {
-			umlautAddCondition = true;
-			childrenCharPos = new TrieNode(firstChar);
-			childrenCharPos.parent = this;
-			children.put(firstChar, childrenCharPos);
+		if (word.equalsIgnoreCase("\"")) {
+
+			childrenCharPos.add(word.substring(1));
+
+		} else {
+
+			if (childrenCharPos == null) {
+
+				childrenCharPos = new TrieNode(firstChar);
+				childrenCharPos.parent = this;
+				children.put(firstChar, childrenCharPos);
+			}
+
+			if (word.length() > 1) {
+
+				if (word.charAt(1) == '\"') {
+					childrenCharPos.IsFollowedByUmlaut = true;
+					if (word.length() > 2)
+						word = word.substring(2);
+					else {
+						childrenCharPos.isWord = true;
+						return;
+					}
+				} else
+					word = word.substring(1);
+
+				childrenCharPos.add(word);
+			} else {
+				childrenCharPos.isWord = true;
+				return;
+
+			}
 		}
 
-		if (word.length() > 1) {
-			if(umlautAddCondition && '\"' == word.charAt(1)) {
-				this.isFollowedByUmlaut = true;
-			} else {
-				this.isFollowedByUmlaut = false;
-			}
-			childrenCharPos.add(word.substring(1));
-		} else {
-			childrenCharPos.isWord = true;
-			this.isFollowedByUmlaut = false;
-		}
 	}
 
 	/**
@@ -83,53 +88,25 @@ public class TrieNode {
 	 * @param c
 	 * @return
 	 */
+
 	protected TrieNode getNode(char c) {
-//		if(this.isFollowedByUmlaut) {
-//			TrieNode tempNode = children.get(c);
-//			if(null == tempNode) {
-//				System.out.println("waaaaa\"");
-//			}
-//			return tempNode.children.get(tempNode.character);
-//		}
-//		TrieNode tempNode = children.get(c);
-//		if(null != tempNode)
-//		System.out.println(tempNode.character);
-//		if(null != tempNode && '\"' == tempNode.character) {
-//			System.out.println("Woop");
-//		}
+
 		return children.get(c);
 	}
 
-	/**
-	 * Returns a List of String objects which are lower in the hierarchy that
-	 * this node.
-	 * 
-	 * @return
-	 */
-	protected List<String> getWords() {
-		// Create a list to return
-		List<String> list = new ArrayList<String>();
+	protected String returnDisplay(char word) {
 
-		// If this node represents a word, add it
-		if (isWord) {
-//			String temp  = this.toString().replaceAll("[^A-Za-z0-9]", "");
-//			System.out.println(temp);
-			list.add(this.toString());
-		}
+		if (IsFollowedByUmlaut)
+			return word + "\"";
+		else
+			return word + "";
 
-		// If any children
-		if (!isLeaf) {
-			Set<Entry<Character, TrieNode>> set = children.entrySet();
-			Iterator<Entry<Character, TrieNode>> i = set.iterator();
-			while (i.hasNext()) {
-				TrieNode child = i.next().getValue();
-				if (child != null) {
-					list.addAll(child.getWords());
-				}
+	}
 
-			}
-		}
-		return list;
+	protected TrieNode returnChild(char word) {
+
+		return children.get(word);
+
 	}
 
 	public boolean isWord() {
