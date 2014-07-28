@@ -37,9 +37,6 @@ public class Encoder {
 		reader = new DictionaryReader();
 		reader.readFile();
 		DigitWordMap.buildMap();
-		//System.out.println(reader.getDictTrie().containsPrefix("boss"));
-//		System.out.println(reader.getDictTrie().containsWord("bosses"));
-//		System.out.println(reader.getDictTrie().getDisplayWordFinal("blau"));
 	}
 
 	/**
@@ -79,7 +76,6 @@ public class Encoder {
 		constructOutput(input, possiblePrefixes, currentWord);
 		for (String output : finalOutput) {
 			System.out.println(displayNumber + ": " + reader.getDictTrie().getDisplayWordFinal(output));
-			//System.out.println(displayNumber + ": " +output);
 		}
 
 	}

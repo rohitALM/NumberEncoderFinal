@@ -43,7 +43,13 @@ public class Trie {
 		}
 		return true;
 	}
-
+	
+	/**
+	 * Checks if input string is a complete word in the dictionary
+	 * 
+	 * @param word
+	 * @return
+	 */
 	public boolean containsWord(String word) {
 
 		TrieNode lastNode = root;
@@ -57,128 +63,76 @@ public class Trie {
 			return true;
 		return false;
 	}
-	
-	public String getDisplayWordFinal(String wordToFormat) {
-		
-		String[] words = wordToFormat.split(" ");
-		 List<String> wordList = Arrays.asList(words);  
-		 List<String> displayWord = new ArrayList<String>();
-		 
-		 for(String word : wordList) {
-			 
-			 	if(isNumeric(word)) {
-			 		displayWord.add(word);
-			 		continue;
-			 	}
-			 
-				TrieNode lastNode = root;
-				List<Integer> umlautPositions;
-				for (int i = 0; i < word.length(); i++) {
-					lastNode = lastNode.getNode(word.charAt(i));
-					// If no node matches, then no words exist, return empty list
-
-				}
-				if (lastNode.isWord()) {
-					umlautPositions = lastNode.getUmlautPositions();
-					if(umlautPositions.size() == 0) {
-						//return word;
-						displayWord.add(word);
-					} else {
-						StringBuilder sb = new StringBuilder(word);
-						int offsetIndex = 0;
-						for(Integer position : umlautPositions) {
-							sb.insert(position.intValue()+offsetIndex, '\"');
-							offsetIndex++;
-						}
-						//return sb.toString();
-						displayWord.add(sb.toString());
-					}
-				}
-			 
-		 }
-		 
-		 StringBuilder sb = new StringBuilder();
-			for(String word : displayWord) {
-				sb.append(word);
-				sb.append(" ");
-				
-			}
-
-		return sb.toString().trim();
-		 
-		 
-		
-//		TrieNode lastNode = root;
-//		List<Integer> umlautPositions;
-//		for (int i = 0; i < word.length(); i++) {
-//			lastNode = lastNode.getNode(word.charAt(i));
-//			// If no node matches, then no words exist, return empty list
-//
-//		}
-//		if (lastNode.isWord()) {
-//			umlautPositions = lastNode.getUmlautPositions();
-//			if(umlautPositions.size() == 0) {
-//				return word;
-//			} else {
-//				StringBuilder sb = new StringBuilder(word);
-//				int offsetIndex = 0;
-//				for(Integer position : umlautPositions) {
-//					sb.insert(position.intValue()+offsetIndex, '\"');
-//					offsetIndex++;
-//				}
-//				return sb.toString();
-//			}
-//		}
-//		return word;
-		
-	}
-	
-	private  boolean isNumeric(String str)
-	{
-	    for (char c : str.toCharArray())
-	    {
-	        if (!Character.isDigit(c)) return false;
-	    }
-	    return true;
-	}
 
 	/**
 	 * Returns word to be displayed which includes the special " character
 	 * 
-	 * @param word
+	 * @param wordToFormat
 	 * @return
 	 */
-	public String getDisplayWord(String word) {
+	public String getDisplayWordFinal(String wordToFormat) {
 
-		TrieNode currentNode = root;
-		String currentDisplay = "";
+		String[] words = wordToFormat.split(" ");
+		List<String> wordList = Arrays.asList(words);
+		List<String> displayWord = new ArrayList<String>();
 
-		for (int i = 0; i < word.length(); i++) {
-			boolean isLastCharacter = false;
-
-			if (i == (word.length() - 1)) {
-				isLastCharacter = true;
-			} else if (word.charAt(i + 1) == ' ') {
-				isLastCharacter = true;
-			}
-
-			if (word.charAt(i) == ' ') {
-				currentDisplay += " ";
-				currentNode = root;
+		for (String word : wordList) {
+			// If digit - no encoding required
+			if (isNumeric(word)) {
+				displayWord.add(word);
 				continue;
 			}
 
-			if (word.charAt(i) >= '0' && word.charAt(i) <= '9') {
-				currentDisplay += word.charAt(i);
-				continue;
+			TrieNode lastNode = root;
+			List<Integer> umlautPositions;
+			for (int i = 0; i < word.length(); i++) {
+				lastNode = lastNode.getNode(word.charAt(i));
+
 			}
-			currentNode = currentNode.getNode(word.charAt(i));
-			if (currentNode == null)
-				break;
-			currentDisplay = currentDisplay + currentNode.returnDisplay(word.charAt(i) , isLastCharacter);
+			// Get umlaut poitions from lastnode and insert umlaut in the given
+			// indexes
+			if (lastNode.isWord()) {
+				umlautPositions = lastNode.getUmlautPositions();
+				if (umlautPositions.size() == 0) {
+
+					displayWord.add(word);
+				} else {
+					StringBuilder sb = new StringBuilder(word);
+					int offsetIndex = 0;
+					for (Integer position : umlautPositions) {
+						sb.insert(position.intValue() + offsetIndex, '\"');
+						offsetIndex++;
+					}
+
+					displayWord.add(sb.toString());
+				}
+			}
+
 		}
 
-		return currentDisplay;
+		StringBuilder sb = new StringBuilder();
+		for (String word : displayWord) {
+			sb.append(word);
+			sb.append(" ");
+
+		}
+
+		return sb.toString().trim();
+
+	}
+
+	/**
+	 * Checks if the input string is numeric
+	 * 
+	 * @param str
+	 * @return
+	 */
+	private boolean isNumeric(String str) {
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c))
+				return false;
+		}
+		return true;
 	}
 
 }

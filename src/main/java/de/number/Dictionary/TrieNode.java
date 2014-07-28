@@ -15,7 +15,9 @@ public class TrieNode {
 
 	private boolean IsFollowedByUmlaut;// Checks if the preceding character is
 										// an umlaut
-	private List<Integer> umlautPositions; // If this node represents the last character of a word , store the positions of the umlaut
+	private List<Integer> umlautPositions; // If this node represents the last
+											// character of a word , store the
+											// positions of the umlaut
 
 	/**
 	 * Constructor for top level root node.
@@ -34,72 +36,68 @@ public class TrieNode {
 		this();
 		this.character = character;
 	}
-	
-	protected void add(String word)  {
-		add(word, new ArrayList<Integer>() , 1 );
+
+	/**
+	 * Adds the given word to the trie
+	 * 
+	 * @param word
+	 */
+	protected void add(String word) {
+		add(word, new ArrayList<Integer>(), 1);
 	}
 
 	/**
 	 * Adds a word to this node. This method is called recursively and adds
 	 * child nodes for each successive letter in the word, therefore recursive
-	 * calls will be made with partial words.
+	 * calls will be made with partial words. It records the umlaut positions
+	 * and stores it at the end of the word
 	 * 
 	 * @param word
-	 *            the word to add
+	 * @param umlautPosition
+	 * @param index
 	 */
-	private void add(String word , List<Integer> umlautPosition , int index) {
-		
+	private void add(String word, List<Integer> umlautPosition, int index) {
+
 		if (word.length() < 1)
 			return;
 
 		char firstChar = word.charAt(0);
 
 		TrieNode childrenCharPos = children.get(firstChar);
+		// Check if children exist
+		if (childrenCharPos == null) {
 
-//		if (word.equalsIgnoreCase("\"")) {
-//
-//			childrenCharPos.add(word.substring(1));
-//
-//		} else {
+			childrenCharPos = new TrieNode(firstChar);
+			childrenCharPos.parent = this;
+			children.put(firstChar, childrenCharPos);
+		}
 
-			if (childrenCharPos == null) {
+		if (word.length() > 1) {
 
-				childrenCharPos = new TrieNode(firstChar);
-				childrenCharPos.parent = this;
-				children.put(firstChar, childrenCharPos);
-			}
+			if (word.charAt(1) == '\"') {
+				childrenCharPos.IsFollowedByUmlaut = true;
+				// Record the umlaut positions
+				if (word.length() > 2) {
+					word = word.substring(2);
+					umlautPosition.add(index);
+					childrenCharPos.add(word, umlautPosition, ++index);
+				} else {
+					childrenCharPos.umlautPositions.add(index);
+					childrenCharPos.isWord = true;
+					return;
+				}
+			} else
+				word = word.substring(1);
 
-			if (word.length() > 1) {
+			childrenCharPos.add(word, umlautPosition, ++index);
+		} else {
+			// Store the umlaut positions at the End of word
+			childrenCharPos.umlautPositions = umlautPosition;
+			childrenCharPos.isWord = true;
+			return;
 
-				if (word.charAt(1) == '\"') {
-					childrenCharPos.IsFollowedByUmlaut = true;
-				
-					if (word.length() > 2) {
-						word = word.substring(2);
-						umlautPosition.add(index);
-						childrenCharPos.add(word ,umlautPosition ,++index);
-					}
-					else {
-						childrenCharPos.umlautPositions.add(index);
-						childrenCharPos.isWord = true;
-						return;
-					}
-				} else
-					word = word.substring(1);
+		}
 
-					childrenCharPos.add(word , umlautPosition , ++index);
-			} else {
-				childrenCharPos.umlautPositions = umlautPosition;
-				childrenCharPos.isWord = true;
-				return;
-
-			}
-//		}
-
-	}
-
-	public List<Integer> getUmlautPositions() {
-		return umlautPositions;
 	}
 
 	/**
@@ -110,55 +108,25 @@ public class TrieNode {
 	 * @return
 	 */
 
-	protected TrieNode getNodeWithUmlaut(char c) {
-		if(this.IsFollowedByUmlaut) {
-			TrieNode umlautNode = children.get('\"');
-			return umlautNode.children.get(c);
-		}
-		return children.get(c);
-	}
-	
 	protected TrieNode getNode(char c) {
 		return children.get(c);
 	}
-	
+
 	public boolean isIsFollowedByUmlaut() {
 		return IsFollowedByUmlaut;
-	}
-	
-	
-
-	/**
-	 * Returns the character to be displayed
-	 * Appends " if required
-	 * 
-	 * @param word
-	 * @param isLastCharacter
-	 * @return
-	 */
-	protected String returnDisplay(char word , boolean isLastCharacter) {
-
-		if (IsFollowedByUmlaut && !isLastCharacter)
-			return word + "\"";
-		else
-			return word + "";
-
-	}
-	
-	/**
-	 * Returns the children 
-	 * 
-	 * @param word
-	 * @return
-	 */
-	protected TrieNode returnChild(char word) {
-
-		return children.get(word);
-
 	}
 
 	public boolean isWord() {
 		return isWord;
+	}
+
+	/**
+	 * Getter for umlaut position index
+	 * 
+	 * @return
+	 */
+	public List<Integer> getUmlautPositions() {
+		return umlautPositions;
 	}
 
 	/**

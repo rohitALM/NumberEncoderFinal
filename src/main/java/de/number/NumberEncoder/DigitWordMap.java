@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Stores the Digit to Character Map in MemoryF
+ * 
  * @author Rohit
  * 
  */
@@ -19,7 +21,9 @@ public class DigitWordMap {
 	private DigitWordMap() {
 
 	}
-
+	/**
+	 * Builds the digit word map
+	 */
 	public static void buildMap() {
 
 		List<String> charList0 = Arrays.asList("e", "E");

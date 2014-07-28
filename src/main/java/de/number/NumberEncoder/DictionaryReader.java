@@ -20,7 +20,7 @@ public class DictionaryReader {
 	 * Reads the Dictionary and stores it in the trie
 	 */
 	public void readFile() {
-		File file = new File("Dictionary.txt");
+		File file = new File("dictionary.txt");
 
 		try {
 
