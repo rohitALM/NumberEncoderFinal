@@ -30,13 +30,16 @@ public class Encoder {
 	}
 
 	/**
-	 * Initializes the Trie which stores he dictionary . Initilaizes the digit
+	 * Initializes the Trie which stores he dictionary . Initializes the digit
 	 * to character map
 	 */
 	private void init() {
 		reader = new DictionaryReader();
 		reader.readFile();
 		DigitWordMap.buildMap();
+		//System.out.println(reader.getDictTrie().containsPrefix("boss"));
+//		System.out.println(reader.getDictTrie().containsWord("bosses"));
+//		System.out.println(reader.getDictTrie().getDisplayWordFinal("blau"));
 	}
 
 	/**
@@ -75,7 +78,8 @@ public class Encoder {
 		String currentWord = "";
 		constructOutput(input, possiblePrefixes, currentWord);
 		for (String output : finalOutput) {
-			System.out.println(displayNumber + ": " + reader.getDictTrie().getDisplayWord(output));
+			System.out.println(displayNumber + ": " + reader.getDictTrie().getDisplayWordFinal(output));
+			//System.out.println(displayNumber + ": " +output);
 		}
 
 	}
